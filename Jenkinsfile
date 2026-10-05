@@ -10,17 +10,14 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/revesh1998-cmd/CI-CD-PIPELINE.git'
+                checkout scm
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv("${SONARQUBE_SERVER}") {
-                    sh '''
-                        mvn org.sonarsource.scanner.maven:sonar-maven-plugin:5.0.0.4389:sonar
-                    '''
+                withSonarQubeEnv('Sonarqube') {
+                    sh 'mvn clean verify sonar:sonar'
                 }
             }
         }
@@ -33,13 +30,7 @@ pipeline {
             }
         }
 
-        stage('Build') {
-            steps {
-                sh 'mvn clean compile'
-            }
-        }
-
-        stage('Unit Test') {
+        stage('Test') {
             steps {
                 sh 'mvn test'
             }
@@ -47,7 +38,7 @@ pipeline {
 
         stage('Package') {
             steps {
-                sh 'mvn package -DskipTests'
+                sh 'mvn package'
             }
         }
 
@@ -55,7 +46,6 @@ pipeline {
             steps {
                 sh '''
                     mvn deploy \
-                    -DskipTests \
                     -s /var/lib/jenkins/.m2/settings.xml
                 '''
             }
@@ -63,17 +53,12 @@ pipeline {
     }
 
     post {
-
         success {
-            echo 'Pipeline execution completed successfully.'
+            echo 'Pipeline executed successfully!'
         }
 
         failure {
-            echo 'Pipeline execution failed.'
-        }
-
-        always {
-            echo 'Pipeline finished.'
+            echo 'Pipeline failed!'
         }
     }
 }
