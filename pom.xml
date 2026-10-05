@@ -10,7 +10,7 @@
     <!-- Project Information -->
     <groupId>com.example</groupId>
     <artifactId>javaproject</artifactId>
-    <version>1.3</version>
+    <version>1.3-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>javaproject</name>
