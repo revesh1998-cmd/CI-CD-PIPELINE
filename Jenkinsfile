@@ -2,10 +2,6 @@ pipeline {
 
     agent any
 
-    environment {
-        SONARQUBE_SERVER = 'Sonarqube'
-    }
-
     stages {
 
         stage('Checkout') {
@@ -17,7 +13,10 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('Sonarqube') {
-                    sh 'mvn clean verify sonar:sonar'
+                    sh '''
+                        mvn clean verify \
+                        org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+                    '''
                 }
             }
         }
@@ -53,6 +52,7 @@ pipeline {
     }
 
     post {
+
         success {
             echo 'Pipeline executed successfully!'
         }
