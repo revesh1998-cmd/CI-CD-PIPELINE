@@ -2,11 +2,17 @@ pipeline {
 
     agent any
 
+    environment {
+        SONARQUBE_SERVER = 'Sonarqube'
+        NEXUS_URL = 'http://172.31.45.141:8081/repository/maven-releases/'
+    }
+
     stages {
 
         stage('Checkout') {
             steps {
-                checkout scm
+                git branch: 'main',
+                    url: 'https://github.com/YOUR_USERNAME/CI-CD-PIPELINE.git'
             }
         }
 
@@ -14,8 +20,7 @@ pipeline {
             steps {
                 withSonarQubeEnv('Sonarqube') {
                     sh '''
-                        mvn clean verify \
-                        org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+                        mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
                     '''
                 }
             }
@@ -23,9 +28,15 @@ pipeline {
 
         stage('Quality Gate') {
             steps {
-                timeout(time: 5, unit: 'MINUTES') {
+                timeout(time: 2, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
                 }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'mvn clean compile'
             }
         }
 
@@ -52,9 +63,8 @@ pipeline {
     }
 
     post {
-
         success {
-            echo 'Pipeline executed successfully!'
+            echo 'Pipeline completed successfully!'
         }
 
         failure {
