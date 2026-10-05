@@ -2,17 +2,12 @@ pipeline {
 
     agent any
 
-    environment {
-        SONARQUBE_SERVER = 'Sonarqube'
-        NEXUS_URL = 'http://172.31.45.141:8081/repository/maven-releases/'
-    }
-
     stages {
 
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/YOUR_USERNAME/CI-CD-PIPELINE.git'
+                    url: 'https://github.com/revesh1998-cmd/CI-CD-PIPELINE.git'
             }
         }
 
@@ -28,7 +23,7 @@ pipeline {
 
         stage('Quality Gate') {
             steps {
-                timeout(time: 2, unit: 'MINUTES') {
+                timeout(time: 5, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
                 }
             }
